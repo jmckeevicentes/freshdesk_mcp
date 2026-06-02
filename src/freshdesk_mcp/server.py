@@ -174,7 +174,7 @@ async def get_ticket_fields() -> Dict[str, Any]:
 
 
 @mcp.tool()
-async def get_tickets(page: Optional[int] = 1, per_page: Optional[int] = 30, ticket_filter: Optional[str] = None) -> Dict[str, Any]:
+async def get_tickets(page: Optional[int] = 1, per_page: Optional[int] = 30, ticket_filter: Optional[str] = None, updated_since: Optional[str] = None) -> Dict[str, Any]:
     """Get tickets from Freshdesk with pagination support."""
     # Validate input parameters
     if page < 1:
@@ -185,17 +185,14 @@ async def get_tickets(page: Optional[int] = 1, per_page: Optional[int] = 30, tic
 
     url = f"https://{FRESHDESK_DOMAIN}/api/v2/tickets"
 
-    if ticket_filter == None:
-        params = {
-            "page": page,
-            "per_page": per_page
-        }
-    else:
-        params = {
-            "page": page,
-            "per_page": per_page,
-            "filter": ticket_filter
-        }
+    params = {
+        "page": page,
+        "per_page": per_page
+    }
+    if ticket_filter != None:
+        params["filter"] = ticket_filter
+    if updated_since != None:
+        params["updated_since"] = updated_since
 
     headers = {
         "Authorization": f"Basic {base64.b64encode(f'{FRESHDESK_API_KEY}:X'.encode()).decode()}",
